@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 
 const Login = (props) => {
     const [credentials, setCredentials] = useState({email: "", password: ""}) 
-    let history = useHistory();
+    let history = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
