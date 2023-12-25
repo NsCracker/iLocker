@@ -12,6 +12,7 @@ import  Alert  from './components/Alert';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import { useState } from 'react';
+import Pdffile from './components/Pdffile';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -33,6 +34,7 @@ function App() {
           <div className="container">
             <Routes>
               <Route exact path="/" element={<Home showAlert={showAlert} />} />
+              <Route exact path="/pdffile" element={<Pdffile />} />
               <Route exact path="/about" element={<About />} />
               <Route exact path="/login" element={<Login showAlert={showAlert} />} />
               <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />

@@ -24,6 +24,9 @@ const Navbar = (props) => {
                             <Link className={`nav-link ${location.pathname==="/"? "active": ""}`} aria-current="page" to="/">Home</Link>
                         </li>
                         <li className="nav-item">
+                            <Link className={`nav-link ${location.pathname==="/pdffile"? "active": ""}`} to="/pdffile">Pdf</Link>
+                        </li>
+                        <li className="nav-item">
                             <Link className={`nav-link ${location.pathname==="/about"? "active": ""}`} to="/about">About</Link>
                         </li>
 
