@@ -15,5 +15,5 @@ app.use('/api/notes', require('./routes/notes'))
 app.use('/api/pdfs', require('./routes/pdf'))
 
 app.listen(port, () => {
-  console.log(`iNotebook backend listening at http://localhost:${port}`)
+  console.log(`iLocker backend listening at http://localhost:${port}`)
 })

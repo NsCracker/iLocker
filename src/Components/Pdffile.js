@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios"; 
 import { pdfjs } from "react-pdf";    //for react open
 import PdfComp from "./Pdfcomp";    //for react open
+import { useNavigate } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(    //for react open
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -13,34 +14,84 @@ function Pdffile() {
     const [file, setFile] = useState("");
     const [allImage, setAllImage] = useState(null);
     const [pdfFile, setPdfFile] = useState(null);     //for react open
+    let navigate = useNavigate();
 
 
     useEffect(() => {
-        getPdf();
-    }, []);
+        if (!localStorage.getItem('token')) {
+            navigate("/login");  // Redirect to login if no token
+        } else {
+            getPdf();
+        }
+    }, [navigate]);
+
     const getPdf = async () => {
-        const result = await axios.get("http://localhost:5000/api/pdfs/get-files");
-        console.log(result.data.data);
-        setAllImage(result.data.data);
+        try {
+            const token = localStorage.getItem('token');
+         if (!token) {
+             navigate("/login"); // Redirect if no token found
+             return;
+         }
+
+         const result = await axios.get("http://localhost:5000/api/pdfs/get-files", {
+             headers: {
+                 "auth-token": token, // Include the token for authentication
+             },
+         });
+
+         setAllImage(result.data.data); // Populate the images
+        } catch (error) {
+            console.error("Error fetching PDFs:", error);
+        }
     };
 
+    
     const submitImage = async (e) => {
         e.preventDefault();
+
+        if (!title || !file) {
+            alert("Please enter a title and select a file.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("title", title);
         formData.append("file", file);
-        console.log(title, file);
 
-        const result = await axios.post("http://localhost:5000/api/pdfs/upload-files", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+        const token = localStorage.getItem('token');  // Get token from localStorage
+        if (!token) {
+            alert("You need to be logged in.");
+            navigate("/login");
+            return;
         }
-        );
-        console.log(result);
-        if (result.data.status === "ok") {
-            alert("Uploaded Successfully!!!");
-            getPdf();
+
+        try {
+            const result = await axios.post("http://localhost:5000/api/pdfs/upload-files", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "auth-token": token,  // Include token in headers
+                },
+            });
+
+            if (result.data && result.data._id) {
+                alert("Uploaded Successfully!!!");
+                getPdf();
+
+                setTitle({title: ""})
+                setFile(null)
+                
+
+            } else {
+                alert("Error uploading file.");
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            alert("Error uploading file.");
         }
     };
+
+    
+
     const showPdf = (pdf) => {
         window.open(`http://localhost:5000/api/pdfs/files/${pdf}`, "_blank", "noreferrer");   
         setPdfFile(`http://localhost:5000/api/pdfs/files/${pdf}`)  //for react open
@@ -50,18 +101,18 @@ function Pdffile() {
             <form className="formStyle" onSubmit={submitImage}>
                 <h4>Upload Doc</h4>
                 <br />
-                <input type="text" className="form-control" placeholder="Title" required onChange={(e) => setTitle(e.target.value)} />
+                <input type="text" className="form-control" placeholder="Title" minLength={3}  onChange={(e) => setTitle(e.target.value)} required />
                 <br />
-                <input type="file" class="form-control" accept="multipart/form-data" required onChange={(e) => setFile(e.target.files[0])} />
+                <input type="file" className="form-control" accept="multipart/form-data"  onChange={(e) => setFile(e.target.files[0])} required />
                 <br />
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button disabled={title.length<3 || !file} className="btn btn-primary" type="submit">Add Document</button>
             </form>
             <div className="uploaded">
                 <h4>Uploaded PDF:</h4>
                 <div className="output-div">
                     {allImage == null ? "" : allImage.map((data) => {
                         return (
-                            <div className="inner-div">
+                            <div className="inner-div" key={data._id}>
                                 <h6>Title: {data.title}</h6>
                                 <button className="btn btn-primary" onClick={() => showPdf(data.pdf)}>Show Pdf</button>
                             </div>

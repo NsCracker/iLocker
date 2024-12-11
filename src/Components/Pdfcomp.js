@@ -20,6 +20,7 @@ function PdfComp(props) {
           .map((page) => {
             return (
               <Page
+                key={page}
                 pageNumber={page}
                 renderTextLayer={false}
                 renderAnnotationLayer={false}
