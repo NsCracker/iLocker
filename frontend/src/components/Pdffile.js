@@ -10,6 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(    //for react open
 ).toString();
 
 function Pdffile() {
+    const host = process.env.REACT_APP_HOST
     const [title, setTitle] = useState("");
     const [file, setFile] = useState("");
     const [allImage, setAllImage] = useState(null);
@@ -23,6 +24,7 @@ function Pdffile() {
         } else {
             getPdf();
         }
+        // eslint-disable-next-line
     }, [navigate]);
 
     const getPdf = async () => {
@@ -33,7 +35,7 @@ function Pdffile() {
              return;
          }
 
-         const result = await axios.get("http://localhost:5000/api/pdfs/get-files", {
+         const result = await axios.get(`${host}/api/pdfs/get-files`, {
              headers: {
                  "auth-token": token, // Include the token for authentication
              },
@@ -66,7 +68,7 @@ function Pdffile() {
         }
 
         try {
-            const result = await axios.post("http://localhost:5000/api/pdfs/upload-files", formData, {
+            const result = await axios.post(`${host}/api/pdfs/upload-files`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     "auth-token": token,  // Include token in headers
@@ -93,8 +95,8 @@ function Pdffile() {
     
 
     const showPdf = (pdf) => {
-        window.open(`http://localhost:5000/api/pdfs/files/${pdf}`, "_blank", "noreferrer");   
-        setPdfFile(`http://localhost:5000/api/pdfs/files/${pdf}`)  //for react open
+        window.open(`${host}/api/pdfs/files/${pdf}`, "_blank", "noreferrer");   
+        setPdfFile(`${host}/api/pdfs/files/${pdf}`)  //for react open
       };
     return (
         <div className="App">
