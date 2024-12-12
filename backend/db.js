@@ -1,6 +1,7 @@
+require("dotenv").config({ path: './.env.local' });
 const mongoose = require('mongoose');
 
-const mongoURI = "mongodb://127.0.0.1:27017/iLocker_"
+const mongoURI = process.env.MONGO_DB_URL
 
 const connectToMongo = ()=>{
     mongoose.connect(mongoURI, ()=>{
